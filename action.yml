@@ -1,41 +1,44 @@
-name: 'action-xcodeproj-spm-update'
-description: 'Update your Xcode project with the latest Swift Package dependencies'
+name: "action-xcodeproj-spm-update"
+description: "Update your Xcode project with the latest Swift Package dependencies"
 branding:
   icon: "package"
   color: "purple"
 inputs:
   directory:
-    description: 'The path in which the Xcodeproj can be found.'
+    description: "The path in which the Xcodeproj can be found."
     required: false
-    default: '.'
+    default: "."
   forceResolution:
-    description: 'Always regenerate the Package.resolved, irrespective of conflicts.'
+    description: "Always regenerate the Package.resolved, irrespective of conflicts."
     required: false
-    default: false
+    default: "false"
   failWhenOutdated:
-    description: 'Action will fail if changes to dependencies are made.'
+    description: "Action will fail if changes to dependencies are made."
     required: false
-    default: true
+    default: "true"
   xcodePath:
-    description: 'The path to Xcode which should be used to run xcodebuild commands - allows you to speicfy the Xcode version.'
+    description: "The path to Xcode which should be used to run xcodebuild commands - allows you to specify the Xcode version."
     required: false
   workspace:
-    description: 'If in use, provide the name of your xcworkspace file such as Example.xcworkspace'
+    description: "If in use, provide the name of your xcworkspace file such as Example.xcworkspace"
     required: false
   scheme:
-    description: 'If specifying a workspace file, you must also provide a scheme as defined within your Xcode workspace.'
+    description: "If specifying a workspace file, you must also provide a scheme as defined within your Xcode workspace."
+    required: false
+  project_name:
+    description: "The name of your Xcode project file such as Example.xcodeproj"
     required: false
 outputs:
   dependenciesChanged:
-    description: 'A bool (true or false) indicating whether changes were made to the dependencies.'
+    description: "A bool (true or false) indicating whether changes were made to the dependencies."
     value: ${{ steps.script.outputs.dependenciesChanged }}
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - run: brew install md5sha1sum
       shell: bash
     - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
       shell: bash
     - id: script
-      run: entrypoint.sh -a "${{ inputs.directory }}" -b "${{ inputs.forceResolution }}" -c "${{ inputs.failWhenOutdated }}" -d "${{ inputs.xcodePath }}" -e "${{ inputs.workspace }}" -f "${{ inputs.scheme }}"
+      run: entrypoint.sh -a "${{ inputs.directory }}" -b "${{ inputs.forceResolution }}" -c "${{ inputs.failWhenOutdated }}" -d "${{ inputs.xcodePath }}" -e "${{ inputs.workspace }}" -f "${{ inputs.scheme }} -g "${{ inputs.project_name }}"
       shell: bash
