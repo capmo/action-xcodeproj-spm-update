@@ -95,3 +95,13 @@ if [ "$CHECKSUM" != "$NEWCHECKSUM" ]; then
 else
     echo "dependenciesChanged=false" >> $GITHUB_OUTPUT
 fi
+
+# Add *.resolved
+git add *.resolved
+git commit -m "Update Package.resolved"
+
+# Reset 
+git rm .gitattributes
+git add -A
+git reset --hard
+
