@@ -4,28 +4,28 @@ set -e
 # Load Options
 while getopts "a:b:c:d:e:f:g:" o; do
     case "${o}" in
-        a)
-            export directory=${OPTARG}
+    a)
+        export directory=${OPTARG}
         ;;
-        b)
-            export forceResolution=${OPTARG}
+    b)
+        export forceResolution=${OPTARG}
         ;;
-        c)
-            export failWhenOutdated=${OPTARG}
+    c)
+        export failWhenOutdated=${OPTARG}
         ;;
-        d)
-            if [ ! -z "${OPTARG}" ]; then
-                export DEVELOPER_DIR="${OPTARG}"
-            fi
+    d)
+        if [ ! -z "${OPTARG}" ]; then
+            export DEVELOPER_DIR="${OPTARG}"
+        fi
         ;;
-        e)
-            export workspaceName=${OPTARG}
+    e)
+        export workspaceName=${OPTARG}
         ;;
-        f)
-            export scheme=${OPTARG}
+    f)
+        export scheme=${OPTARG}
         ;;
-        g)
-            export projectName=${OPTARG}
+    g)
+        export projectName=${OPTARG}
         ;;
     esac
 done
@@ -43,11 +43,9 @@ if [ "$directory" != "." ]; then
 fi
 
 # Identify `Package.resolved` location
-if [ ! -z "$workspaceName" ]
-then
+if [ ! -z "$workspaceName" ]; then
     RESOLVED_PATH=$(find $workspaceName -type f -name "Package.resolved" | grep -v "*/*.xcworkspace/*")
-elif [ ! -z "$projectName" ]
-then
+elif [ ! -z "$projectName" ]; then
     RESOLVED_PATH=$(find . -type f -name "Package.resolved" | grep $projectName".xcodeproj/*")
 else
     RESOLVED_PATH=$(find . -type f -name "Package.resolved" | grep -v "*/*.xcodeproj/*")
@@ -87,21 +85,11 @@ echo "::endgroup"
 NEWCHECKSUM=$(shasum "$RESOLVED_PATH")
 
 if [ "$CHECKSUM" != "$NEWCHECKSUM" ]; then
-    echo "dependenciesChanged=true" >> $GITHUB_OUTPUT
-    
+    echo "dependenciesChanged=true" >>$GITHUB_OUTPUT
+
     if [ "$failWhenOutdated" = true ] || [ "$failWhenOutdated" = 'true' ]; then
         exit 1
     fi
 else
-    echo "dependenciesChanged=false" >> $GITHUB_OUTPUT
+    echo "dependenciesChanged=false" >>$GITHUB_OUTPUT
 fi
-
-# Add *.resolved
-git add *.resolved
-git commit -m "Update Package.resolved"
-
-# Reset 
-git rm .gitattributes
-git add -A
-git reset --hard
-
